@@ -98,7 +98,37 @@
         <?php endif; ?>
     </tbody>
 </table>
-
+<h2>Liste de tous les utilisateurs</h2>
+<table border="1" style="width:100%; border-collapse: collapse; margin-bottom: 25px;">
+    <thead>
+        <tr style="background-color: #f2f2f2;">
+            <th>ID</th>
+            <th>Email</th>
+            <th>Numéro</th>
+            <th>Opérateur</th>
+            <th>Solde Actuel</th>
+            <th>Date d'inscription</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php if (! empty($users)): ?>
+            <?php foreach ($users as $u): ?>
+            <tr>
+                <td><?= $u['id'] ?></td>
+                <td><?= esc($u['email']) ?></td>
+                <td><?= esc($u['numero']) ?></td>
+                <td><?= esc($u['nom_operateur'] ?? 'Inconnu') ?></td>
+                <td style="font-weight: bold;"><?= number_format($u['solde'], 2, '.', ' ') ?> Ar</td>
+                <td><?= $u['created_at'] ?></td>
+            </tr>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <tr>
+                <td colspan="6" style="text-align: center;">Aucun utilisateur trouvé en base de données.</td>
+            </tr>
+        <?php endif; ?>
+    </tbody>
+</table>
 
 <h2>Commissions autres opérateurs</h2>
 <table border="1">

@@ -15,11 +15,48 @@ class Dashboard extends BaseController {
 
         $db = \Config\Database::connect();
 
-        $soldeRow = $db->table('solde_user')
-                       ->where('id_user', session()->get('user_id'))
-                       ->get()
-                       ->getRow();
-        $solde = $soldeRow ? $soldeRow->solde : 0;
+        $userId = session()->get('user_id');
+
+$userId = session()->get('user_id');
+
+$userId = session()->get('user_id');
+
+$solde = $db->query("
+    SELECT 
+        COALESCE(SUM(
+            CASE
+
+               WHEN id_sender = $userId 
+                     AND id_type_operation = 1
+                THEN montant
+
+
+                -- Retrait : enlève argent + frais
+                WHEN id_sender = $userId 
+                     AND id_type_operation = 2
+                THEN -(montant + frais)
+
+
+                -- Transfert envoyé : enlève argent + frais
+                WHEN id_sender = $userId 
+                     AND id_type_operation = 3
+                     AND id_receiver IS NOT NULL
+                THEN -(montant + frais)
+
+
+                -- Transfert reçu
+                WHEN id_receiver = $userId
+                     AND id_type_operation = 3
+                THEN montant
+
+
+                ELSE 0
+
+            END
+        ),0) AS solde
+    FROM transactions
+")->getRow()->solde;
+
 
         $transactions = $db->table('transactions t')
                            ->select('t.*, s.numero as sender_numero, s.email as sender_email, COALESCE(t.receiver_numero, r.numero) as receiver_numero, r.email as receiver_email')

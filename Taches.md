@@ -30,12 +30,12 @@
   
 
 - Operations
-  (ok- 4194) - voir le solde
+  (ok- 4106) - voir le solde
     - depuis la table solde
   (ok- 4194)- faire un dépot
   - faire un retrait
   (ok-4194) - voir les historique
-    (ok)-  table transaction , id-user, id 
+    -  table transaction , id-user, id 
   
 
   V2
@@ -54,9 +54,9 @@
 
 
   ### cote client
-  - Option inclure frais de retrait lors de l’envoi
+  - (ok - 4106) Option inclure frais de retrait lors de l’envoi
     -dans retrait (bouton)(condition)
-    - (ok - 4106) frais dans transfert
+    - frais dans transfert
   -Envoi multiple vers plusieurs numéros ( divisé le montant pour chaque numéro)
     -ajout champ dans transfert
     -fonction calcul montant pour chaque numero
