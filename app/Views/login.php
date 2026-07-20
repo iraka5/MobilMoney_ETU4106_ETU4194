@@ -11,6 +11,11 @@
         <div class="login-card">
             <h1>Se connecter</h1>
 
+<?php if (session()->getFlashdata('error')) : ?>
+    <div style="color: #721c24; background-color: #f8d7da; border: 1px solid #f5c6cb; padding: 12px; margin-bottom: 20px; border-radius: 4px; text-align: center;">
+        <?= session()->getFlashdata('error') ?>
+    </div>
+<?php endif; ?>
             <form id="loginForm" action="<?= base_url('login/check') ?>" method="POST">
                 <label for="numero" class="form-label">Numéro de téléphone</label>
                 <input type="text" id="numero" name="numero" class="form-control" required>
