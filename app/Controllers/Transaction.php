@@ -95,6 +95,7 @@ public function transfert() {
         }
     }
 
+<<<<<<< HEAD
     $totalFraisTouche = $fraisTransfert + $fraisRetrait; 
     $montantRecu = $montantInitial + $fraisRetrait;      
     $totalDebite = $montantInitial + $totalFraisTouche;  
@@ -149,5 +150,32 @@ public function transfert() {
         return redirect()->to('/dashboard')->with('error', 'Solde insuffisant. Il vous faut ' . $totalDebite . ' Ar au total.');
     }
 }
+=======
+    public function CalculFrais() {
+        $montant = $this->request->getPost('montant');
+        $typeOperation = $this->request->getPost('type_operation');
+        $idOperateurSource = $this->request->getPost('id_operateur_source');
+        $idOperateurDest   = $this->request->getPost('id_operateur_dest');
+
+        $baremeModel = new BaremeFraisModel();
+        $row = $baremeModel->getFraisForAmount($typeOperation, $montant);
+        $frais = $row ? (is_array($row) ? (float)$row['montant_frais'] : (float)$row->montant_frais) : 0.0;
+
+        // Vérifie si inter-opérateurs
+        if ($idOperateurSource != $idOperateurDest) {
+            $db = \Config\Database::connect();
+            $commissionRow = $db->table('commissions')
+                                ->where('libelle', 'Inter-opérateurs')
+                                ->get()
+                                ->getRow();
+            if ($commissionRow) {
+                $frais += ($montant * $commissionRow->pourcentage / 100);
+            }
+        }
+
+        return json_encode(['frais' => $frais]);
+    }
+
+>>>>>>> 48d02fc6a0359dfeb238af3d1bb0346a7ac6b91b
 
 }
