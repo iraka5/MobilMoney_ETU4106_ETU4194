@@ -32,10 +32,10 @@
 - Operations
   (ok- 4194) - voir le solde
     - depuis la table solde
-- faire un dépot
+  (ok- 4194)- faire un dépot
   - faire un retrait
-  - voir les historique
-    -  table transaction , id-user, id 
+  (ok-4194) - voir les historique
+    (ok)-  table transaction , id-user, id 
   
 
   configuration de la basesqlite
@@ -48,6 +48,21 @@
     -ajout nouveaux lignes dans la table :id, prefixe, libelle
   -Configuration % en plus de commissions pour les transferts vers les autres opérateurs 
     -creation table commissions avec: id, libelle, pourcentage
-    -fonction pour appliquer % aux frais (autres operateurs seulement)
+    -fonction pour appliquer % aux frais (autres operateurs seulement) 
+    -ajout dans une table transaction autre operateur
   -Sur la page “Situation gain via les différents frais” , séparer opérateur et autres opérateurs
-    -autres tableau affichage des frais avec: 
+    -autres tableau affichage des frais grace a la table transaction autre operateur
+  -Situation des montants à envoyer à chaque opérateur
+    -montant transferee/ %
+
+
+  ### cote client
+  -Option inclure frais de retrait lors de l’envoi
+    -dans retrait (bouton)(condition)
+    -frais dans transfert
+  -Envoi multiple vers plusieurs numéros ( divisé le montant pour chaque numéro)
+    -ajout champ dans transfert
+    -fonction calcul montant pour chaque numero
+    -envoie du montant vers tout les numeros
+
+  
