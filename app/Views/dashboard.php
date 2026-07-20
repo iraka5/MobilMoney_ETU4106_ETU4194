@@ -25,7 +25,6 @@
     <p><strong>Numéro :</strong> <?= esc($user['numero']) ?></p>
     <p><strong>Solde actuel :</strong> <?= esc($solde) ?> Ar</p>
 
-    <!-- Messages -->
     <?php if(session()->getFlashdata('success')): ?>
         <div class="alert alert-success"><?= session()->getFlashdata('success') ?></div>
     <?php endif; ?>
@@ -34,7 +33,6 @@
     <?php endif; ?>
 
     <div class="row mt-4">
-        <!-- Dépôt -->
         <div class="col-md-6">
             <div class="card shadow-sm">
                 <div class="card-header bg-success text-white">Faire un dépôt</div>
@@ -50,7 +48,6 @@
             </div>
         </div>
 
-        <!-- Retrait -->
         <div class="col-md-6">
             <div class="card shadow-sm">
                 <div class="card-header bg-danger text-white">Faire un retrait</div>
@@ -67,7 +64,6 @@
         </div>
     </div>
 
-    <!-- transfert -->
         <div class="col-md-6">
             <div class="card shadow-sm">
                 <div class="card-header bg-warning text-white">Faire un transfert</div>

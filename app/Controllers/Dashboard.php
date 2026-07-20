@@ -6,7 +6,6 @@ use CodeIgniter\Controller;
 
 class Dashboard extends BaseController {
     public function index() {
-        // Vérifier si l’utilisateur est connecté
         if (! session()->get('user_id')) {
             return redirect()->to('/login')->with('error', 'Veuillez vous connecter');
         }
@@ -14,7 +13,6 @@ class Dashboard extends BaseController {
         $usermodel = new UserModel();
         $user = $usermodel->find(session()->get('user_id'));
 
-        // Récupérer le solde
         $db = \Config\Database::connect();
         $soldeRow = $db->table('solde_user')
                        ->where('id_user', session()->get('user_id'))
@@ -22,7 +20,6 @@ class Dashboard extends BaseController {
                        ->getRow();
         $solde = $soldeRow ? $soldeRow->solde : 0;
 
-        // Récupérer les transactions
         $transactions = $db->table('transactions')
                            ->where('id_sender', session()->get('user_id'))
                            ->orWhere('id_receiver', session()->get('user_id'))

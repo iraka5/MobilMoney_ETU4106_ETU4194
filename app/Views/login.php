@@ -34,7 +34,6 @@
             const numeroError = document.getElementById('numeroError');
             const numero = numeroInput.value.trim();
 
-            // Préfixes valides (exemple Madagascar : 032, 033, 034, 038)
             const prefixes = ['032', '033', '034', '038'];
 
             let isValid = false;
@@ -46,7 +45,7 @@
             }
 
             if (!isValid) {
-                e.preventDefault(); // Bloque l’envoi du formulaire
+                e.preventDefault();
                 numeroError.textContent = "Numéro invalide. Exemple : 0321234567";
             } else {
                 numeroError.textContent = "";
