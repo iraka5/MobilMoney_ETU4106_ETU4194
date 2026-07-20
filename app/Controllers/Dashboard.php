@@ -5,6 +5,7 @@ use App\Models\UserModel;
 use CodeIgniter\Controller;
 
 class Dashboard extends BaseController {
+
     public function index() {
         if (! session()->get('user_id')) {
             return redirect()->to('/login')->with('error', 'Veuillez vous connecter');
@@ -21,35 +22,25 @@ $solde = $db->query("
     SELECT 
         COALESCE(SUM(
             CASE
+                -- Dépôt : ajoute le montant net reçu (montant - frais)
+                WHEN id_sender = $userId AND id_type_operation = 1
+                THEN (montant - frais)
 
-               WHEN id_sender = $userId 
-                     AND id_type_operation = 1
-                THEN montant
-
-
-                -- Retrait : enlève argent + frais
-                WHEN id_sender = $userId 
-                     AND id_type_operation = 2
+                -- Retrait : enlève le montant retiré + les frais appliqués
+                WHEN id_sender = $userId AND id_type_operation = 2
                 THEN -(montant + frais)
 
-
-                -- Transfert envoyé : enlève argent + frais
-                WHEN id_sender = $userId 
-                     AND id_type_operation = 3
-                     AND id_receiver IS NOT NULL
+                -- Transfert envoyé (interne OU externe) : enlève le montant + les frais
+                WHEN id_sender = $userId AND id_type_operation = 3
                 THEN -(montant + frais)
 
-
-                -- Transfert reçu
-                WHEN id_receiver = $userId
-                     AND id_type_operation = 3
+                -- Transfert reçu (interne uniquement)
+                WHEN id_receiver = $userId AND id_type_operation = 3
                 THEN montant
-
 
                 ELSE 0
-
             END
-        ),0) AS solde
+        ), 0) AS solde
     FROM transactions
 ")->getRow()->solde;
 

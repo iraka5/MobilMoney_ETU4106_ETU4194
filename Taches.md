@@ -30,7 +30,7 @@
   
 
 - Operations
-  (ok- 4106) - voir le solde
+  (ok- 4194) - voir le solde
     - depuis la table solde
   (ok- 4194)- faire un dépot
   - faire un retrait
@@ -57,7 +57,7 @@
   - (ok - 4106) Option inclure frais de retrait lors de l’envoi
     -dans retrait (bouton)(condition)
     - frais dans transfert
-  -Envoi multiple vers plusieurs numéros ( divisé le montant pour chaque numéro)
+  -  (ok - 4106) Envoi multiple vers plusieurs numéros ( divisé le montant pour chaque numéro)
     -ajout champ dans transfert
     -fonction calcul montant pour chaque numero
     -envoie du montant vers tout les numeros

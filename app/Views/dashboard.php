@@ -120,8 +120,134 @@
             </div>
         </div>
     </div>
+<div class="card shadow-sm border-0 h-100 mb-4">
+    <div class="card-header bg-dark text-white fw-bold">Envoi Multiple (Montant Divisé)</div>
+    <div class="card-body">
+        <form action="<?= base_url('transaction/transfertMultiple') ?>" method="POST" id="formMultiple">
+            
+            <!-- Zone d'ajout de numéro -->
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Ajouter des destinataires</label>
+                <div class="input-group mb-2">
+                    <input type="text" id="inputNumero" class="form-control" placeholder="Ex: 0341234567">
+                    <button class="btn btn-outline-secondary" type="button" id="btnAjouterNumero">Ajouter</button>
+                </div>
+                <div id="multipleNumeroError" class="text-danger small mb-2"></div>
+                
+                <!-- Liste visuelle des numéros ajoutés -->
+                <div id="listeBadgesNumeros" class="d-flex flex-wrap gap-2 my-2">
+                    <!-- Les numéros ajoutés s'afficheront ici sous forme de badges -->
+                </div>
 
-    <!-- Section Historique des transactions -->
+                <!-- Conteneur secret pour les inputs envoyés au serveur -->
+                <div id="inputsMasquesConteneur"></div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Montant global à diviser</label>
+                <div class="input-group">
+                    <input type="number" name="montant_global" class="form-control" placeholder="0.00" min="1" required>
+                    <span class="input-group-text">Ar</span>
+                </div>
+                <div class="form-text text-muted">Ce montant sera divisé équitablement entre chaque numéro ajouté.</div>
+            </div>
+
+            <div class="mb-3 form-check">
+                <input type="checkbox" name="inclure_frais_retrait" value="1" class="form-check-input" id="checkRetraitMultiple">
+                <label class="form-check-label small" for="checkRetraitMultiple">Prendre en charge les frais de retrait pour tous</label>
+            </div>
+
+            <button type="submit" class="btn btn-dark w-100 fw-semibold">Diviser et Transférer</button>
+        </form>
+    </div>
+</div>
+
+<!-- Script JavaScript pour gérer l'ajout dynamique -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const inputNumero = document.getElementById('inputNumero');
+    const btnAjouter = document.getElementById('btnAjouterNumero');
+    const listeBadges = document.getElementById('listeBadgesNumeros');
+    const conteneurInputs = document.getElementById('inputsMasquesConteneur');
+    const errorDiv = document.getElementById('multipleNumeroError');
+    const formMultiple = document.getElementById('formMultiple');
+
+    // Tableau pour stocker les numéros uniques insérés
+    let listeNumeros = [];
+
+    function ajouterUnNumero() {
+        const numero = inputNumero.value.trim();
+        const prefixes = ['032', '033', '034', '038'];
+        
+        // Validation du format du numéro
+        let isValid = false;
+        for (let prefix of prefixes) {
+            if (numero.startsWith(prefix) && numero.length === 10) {
+                isValid = true;
+                break;
+            }
+        }
+
+        if (!isValid) {
+            errorDiv.textContent = "Numéro invalide (doit faire 10 chiffres et commencer par 032, 033, 034 ou 038).";
+            return;
+        }
+
+        if (listeNumeros.includes(numero)) {
+            errorDiv.textContent = "Ce numéro a déjà été ajouté à la liste.";
+            return;
+        }
+
+        errorDiv.textContent = "";
+        listeNumeros.push(numero);
+
+        // Mettre à jour l'interface graphique et les inputs
+        renderList();
+        inputNumero.value = "";
+        inputNumero.focus();
+    }
+
+    function renderList() {
+        listeBadges.innerHTML = "";
+        conteneurInputs.innerHTML = "";
+
+        listeNumeros.forEach((num, index) => {
+            const badge = document.createElement('span');
+            badge.className = "badge bg-secondary d-inline-flex align-items-center gap-2 p-2 fs-6";
+            badge.innerHTML = `${num} <button type="button" class="btn-close btn-close-white small" style="font-size: 0.65rem;" data-index="${index}"></button>`;
+            listeBadges.appendChild(badge);
+
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = "hidden";
+            hiddenInput.name = "numeros_destinataires[]"; 
+            hiddenInput.value = num;
+            conteneurInputs.appendChild(hiddenInput);
+        });
+    }
+
+    btnAjouter.addEventListener('click', ajouterUnNumero);
+
+    inputNumero.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            ajouterUnNumero();
+        }
+    });
+    listeBadges.addEventListener('click', function(e) {
+        if (e.target.classList.contains('btn-close')) {
+            const index = e.target.getAttribute('data-index');
+            listeNumeros.splice(index, 1);
+            renderList();
+        }
+    });
+    formMultiple.addEventListener('submit', function(e) {
+        if (listeNumeros.length === 0) {
+            e.preventDefault();
+            errorDiv.textContent = "Veuillez ajouter au moins un numéro de téléphone avant de valider.";
+        }
+    });
+});
+</script>
     <div class="card shadow-sm border-0">
         <div class="card-header bg-primary text-white fw-bold">Historique des transactions</div>
         <div class="card-body p-0">

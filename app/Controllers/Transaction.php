@@ -232,4 +232,32 @@ class Transaction extends BaseController {
 
         return json_encode(['frais' => $frais]);
     }
+
+public function transfertMultiple() 
+{
+    $tabNumeros = $this->request->getPost('numeros_destinataires');
+    $montantGlobal = (float)$this->request->getPost('montant_global');
+    $inclureFrais = $this->request->getPost('inclure_frais_retrait');
+
+    if (empty($tabNumeros) || !is_array($tabNumeros)) {
+        return redirect()->back()->with('error', 'Veuillez ajouter au moins un numéro de destinataire.');
+    }
+
+    $nbDestinataires = count($tabNumeros);
+    
+    $montantParPersonne = $montantGlobal / $nbDestinataires;
+
+    $listeNumerosPropres = implode(' ', $tabNumeros);
+    $_POST['numero_destinataire'] = $listeNumerosPropres;
+    $_POST['montant'] = $montantGlobal;
+    $_POST['inclure_frais_retrait'] = $inclureFrais;
+
+    $this->request->setGlobal('post', [
+        'numero_destinataire'   => $listeNumerosPropres,
+        'montant'               => $montantGlobal,
+        'inclure_frais_retrait' => $inclureFrais
+    ]);
+
+    return $this->transfert();
+}
 }

@@ -186,3 +186,10 @@ JOIN prefixe p ON p.id = u.id_prefixe
 JOIN operateurs o ON o.id = p.id_operateur
 JOIN commissions c ON c.libelle = o.libelle   
 GROUP BY o.libelle;
+
+
+0321420547,0321420548
+Ajouter des destinataires
+0321420548 0321420547
+Montant global à diviser
+1000ar
