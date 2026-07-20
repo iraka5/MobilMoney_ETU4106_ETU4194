@@ -6,7 +6,6 @@
 
 - Configuration des préfixes valable de l’opérateur
   - crée table / operateur : id , prefixe , libelle
-  
 - Création de types d'opérations 
   - table type_mouvement : id , libelle 
   - table barème : montant_min , montant_max, valeur_frais
@@ -17,8 +16,8 @@
 - Situation des comptes clients
   - tous les informations de la table user, transcations (id_user)
 
-
 ### Coté Client 
+
 - Login automatique avec le numéro de téléphone
   - formulaire, input : numero , email , mdp
     - table utilisateur : numero , email , mdp , id , id-solde, id-préfixe
@@ -35,3 +34,6 @@
   - faire un retrait
   - voir les historique
     -  table transaction , id-user, id 
+  
+
+  configuration de la basesqlite
