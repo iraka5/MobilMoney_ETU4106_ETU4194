@@ -73,5 +73,55 @@
         <?php endif; ?>
     </tbody>
 </table>
+<h2>Situation gain via les commissions autres opérateurs</h2>
+<table border="1">
+    <thead>
+        <tr>
+            <th>Libellé</th>
+            <th>Nombre de transactions</th>
+            <th>Total des commissions reçues</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php if (! empty($gain_commissions)): ?>
+            <?php foreach ($gain_commissions as $gain): ?>
+            <tr>
+                <td><?= esc($gain['libelle']) ?></td>
+                <td><?= esc($gain['nb_transactions']) ?></td>
+                <td><?= esc($gain['total_commissions']) ?> Ar</td>
+            </tr>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <tr>
+                <td colspan="3">Aucune commission enregistrée pour le moment.</td>
+            </tr>
+        <?php endif; ?>
+    </tbody>
+</table>
+<h2>Commissions autre opérateurs</h2>
+<table border="1">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Libellé</th>
+            <th>Pourcentage</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php if (! empty($commissions)): ?>
+            <?php foreach ($commissions as $c): ?>
+            <tr>
+                <td><?= esc($c['id']) ?></td>
+                <td><?= esc($c['libelle']) ?></td>
+                <td><?= esc($c['pourcentage']) ?> %</td>
+            </tr>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <tr>
+                <td colspan="3">Aucune commission configurée.</td>
+            </tr>
+        <?php endif; ?>
+    </tbody>
+</table>
 </body>
 </html>

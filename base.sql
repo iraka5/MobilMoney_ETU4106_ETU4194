@@ -189,3 +189,45 @@ FROM
     "baremeFrais" b
 JOIN 
     "type_operation" t ON b.id_type_operation = t.id;
+
+
+CREATE TABLE commissions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    libelle TEXT NOT NULL,          -- ex: "Inter-opérateurs"
+    pourcentage REAL NOT NULL       -- ex: 5.0 pour 5%
+);
+
+
+INSERT INTO commissions (libelle, pourcentage)
+VALUES ('Orange', 5.0);
+
+
+CREATE TABLE transaction_autre_operateur (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id_user_source INTEGER NOT NULL,
+    id_user_dest INTEGER NOT NULL,
+    montant REAL NOT NULL,
+    frais REAL NOT NULL,
+    date_transaction TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+
+SELECT 
+    'Autres opérateurs' AS libelle,
+    COUNT(*) AS nb_transactions,
+    SUM(frais) AS total_frais,
+    SUM(frais) - SUM(montant * (c.pourcentage/100)) AS gain_net
+FROM transaction_autre_operateur t
+JOIN commissions c ON c.libelle = 'Autres-opérateurs';
+
+SELECT 
+    o.libelle AS operateur,
+    COUNT(*) AS nb_transactions,
+    SUM(t.montant) AS montant_total,
+    SUM(t.montant * (c.pourcentage/100)) AS montant_a_envoyer
+FROM transaction_autre_operateur t
+JOIN users u ON u.id = t.id_user_dest
+JOIN operateurs o ON o.id = u.id_operateur
+JOIN commissions c ON c.libelle = 'Autres opérateurs'
+GROUP BY o.libelle;

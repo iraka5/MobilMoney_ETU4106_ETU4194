@@ -44,7 +44,7 @@
   V2
 
   ### cote operateur
-  -configuration autre prefixe
+  (ok- 4106)-configuration autre prefixe
     -ajout nouveaux lignes dans la table :id, prefixe, libelle
   -Configuration % en plus de commissions pour les transferts vers les autres opérateurs 
     -creation table commissions avec: id, libelle, pourcentage
