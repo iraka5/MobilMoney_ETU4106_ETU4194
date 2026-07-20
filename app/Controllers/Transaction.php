@@ -1,6 +1,7 @@
 <?php
 namespace App\Controllers;
 use App\Models\BaremeFraisModel;
+use App\Models\CommissionModel;
 
 class Transaction extends BaseController {
     
@@ -65,85 +66,153 @@ class Transaction extends BaseController {
     }
 
     public function transfert() {
-        $db = \Config\Database::connect();
-        $userId = session()->get('user_id');
-        $numeroDestinataire = $this->request->getPost('numero_destinataire');
-        $montantInitial = (float)$this->request->getPost('montant');
-        $inclureFraisRetrait = $this->request->getPost('inclure_frais_retrait') === '1';
+    $db = \Config\Database::connect();
+    $userId = session()->get('user_id');
+    
+    // Récupération de la chaîne brute de numéros et nettoyage
+    $numerosBruts = $this->request->getPost('numero_destinataire');
+    $montantTotalSaisi = (float)$this->request->getPost('montant');
+    $inclureFraisRetrait = $this->request->getPost('inclure_frais_retrait') === '1';
 
-        if ($montantInitial <= 0) {
-            return redirect()->to('/dashboard')->with('error', 'Le montant doit être supérieur à 0 Ar');
-        }
+    // Découper les numéros par virgule, espace ou point-virgule
+    $tabNumeros = preg_split('/[\s,;]+/', trim($numerosBruts));
+    $tabNumeros = array_filter($tabNumeros); // Supprimer les entrées vides
+    $nbDestinataires = count($tabNumeros);
 
-        $baremeModel = new BaremeFraisModel();
+    if ($nbDestinataires <= 0) {
+        return redirect()->back()->with('error', 'Veuillez saisir au moins un numéro de destinataire.');
+    }
+    if ($montantTotalSaisi <= 0) {
+        return redirect()->back()->with('error', 'Le montant doit être supérieur à 0 Ar.');
+    }
 
-        $rowTransfert = $baremeModel->getFraisForAmount(3, $montantInitial);
-        $fraisTransfert = 0.0;
-        if ($rowTransfert) {
-            $fraisTransfert = is_array($rowTransfert) ? (float)$rowTransfert['montant_frais'] : (float)$rowTransfert->montant_frais;
-        } else {
-            $fraisTransfert = 50.0; 
-        }
+    // Calcul du montant individuel par personne
+    $montantIndividuel = $montantTotalSaisi / $nbDestinataires;
 
+    $baremeModel = new BaremeFraisModel();
+    $commissionModel = new CommissionModel();
+    $db->transStart(); // Début de la transaction globale sécurisée
+
+    $totalFraisToucheGlobal = 0.0;
+    $totalDebiteGlobal = 0.0;
+    $actionsAEffectuer = [];
+
+    // Étape 1 : Pré-calculer et valider pour TOUS les destinataires avant de débiter quoi que ce soit
+    foreach ($tabNumeros as $numeroDest) {
+        $numeroDest = trim($numeroDest);
+
+        // Calcul frais de transfert
+        $rowTransfert = $baremeModel->getFraisForAmount(3, $montantIndividuel);
+        $fraisTransfert = $rowTransfert ? (is_array($rowTransfert) ? (float)$rowTransfert['montant_frais'] : (float)$rowTransfert->montant_frais) : 50.0;
+
+        // Calcul frais de retrait optionnels
         $fraisRetrait = 0.0;
         if ($inclureFraisRetrait) {
-            $rowRetrait = $baremeModel->getFraisForAmount(2, $montantInitial);
-            if ($rowRetrait) {
-                $fraisRetrait = is_array($rowRetrait) ? (float)$rowRetrait['montant_frais'] : (float)$rowRetrait->montant_frais;
-            } else {
-                $fraisRetrait = 50.0;
-            }
+            $rowRetrait = $baremeModel->getFraisForAmount(2, $montantIndividuel);
+            $fraisRetrait = $rowRetrait ? (is_array($rowRetrait) ? (float)$rowRetrait['montant_frais'] : (float)$rowRetrait->montant_frais) : 50.0;
         }
 
-        $totalFraisTouche = $fraisTransfert + $fraisRetrait; 
-        $montantRecu = $montantInitial + $fraisRetrait;      
-        $totalDebite = $montantInitial + $totalFraisTouche;  
+        // Recherche si le destinataire est interne (client de notre opérateur)
+        $destinataire = $db->table('users')->where('numero', $numeroDest)->get()->getRow();
 
-        $soldeRow = $db->table('solde_user')->where('id_user', $userId)->get()->getRow();
-        $soldeActuel = $soldeRow ? (float)$soldeRow->solde : 0.0;
+        // Si le destinataire n'existe pas chez nous, on regarde si son préfixe
+        // correspond à un autre opérateur connu, et on applique la commission
+        // de cet opérateur en plus des frais de transfert.
+        $operateurDest = null;
+        $commissionMontant = 0.0;
+        if (! $destinataire) {
+            $prefixeDest = ltrim(substr($numeroDest, 0, 3), '0');
+            $prefixeRow  = $db->table('prefixe')->where('prefixe', $prefixeDest)->get()->getRow();
 
-        if ($soldeActuel >= $totalDebite) {
-            $destinataire = $db->table('users')->where('numero', $numeroDestinataire)->get()->getRow();
-
-            $db->transStart(); 
-
-            $db->table('solde_user')
-               ->set('solde', 'solde - ' . $totalDebite, false)
-               ->where('id_user', $userId)
-               ->update();
-
-            if ($destinataire) {
-                $db->table('solde_user')
-                   ->set('solde', 'solde + ' . $montantRecu, false)
-                   ->where('id_user', $destinataire->id)
-                   ->update();
-            }
-            $statut = $destinataire ? 'Transfert' : 'Transfert (externe)';
-            if ($inclureFraisRetrait) {
-                $statut .= ' + Frais Retrait';
+            if (! $prefixeRow) {
+                $db->transRollback();
+                return redirect()->back()->withInput()->with('error', "Le numéro $numeroDest ne correspond à aucun opérateur connu.");
             }
 
-            $db->table('transactions')->insert([
-                'id_sender'         => $userId,
-                'id_receiver'       => $destinataire ? $destinataire->id : null,
-                'receiver_numero'   => $numeroDestinataire,
-                'montant'           => $montantInitial, 
-                'frais'             => $totalFraisTouche, 
-                'statut'            => $statut,
-                'id_type_operation' => 3
-            ]);
-
-            $db->transComplete();
-
-            if ($db->transStatus() === false) {
-                return redirect()->to('/dashboard')->with('error', 'Erreur lors de la mise à jour des soldes en base de données.');
-            }
-
-            return redirect()->to('/dashboard')->with('success', 'Transfert effectué avec succès');
-        } else {
-            return redirect()->to('/dashboard')->with('error', 'Solde insuffisant. Il vous faut ' . $totalDebite . ' Ar au total.');
+            $operateurDest = $prefixeRow->id_operateur;
+            $pourcentageCommission = $commissionModel->getPourcentagePourOperateur($operateurDest);
+            $commissionMontant = $montantIndividuel * ($pourcentageCommission / 100);
         }
+
+        $fraisDestinataire = $fraisTransfert + $fraisRetrait + $commissionMontant;
+        $montantRecu = $montantIndividuel + $fraisRetrait;
+        $totalDebiteDestinataire = $montantIndividuel + $fraisDestinataire;
+
+        $totalFraisToucheGlobal += $fraisDestinataire;
+        $totalDebiteGlobal += $totalDebiteDestinataire;
+
+        // On stocke les données pour l'exécution finale
+        $actionsAEffectuer[] = [
+            'destinataire_obj'   => $destinataire,
+            'numero'             => $numeroDest,
+            'montant_recu'       => $montantRecu,
+            'frais_touche'       => $fraisTransfert + $fraisRetrait,
+            'commission_touchee' => $commissionMontant,
+            'id_operateur_dest'  => $operateurDest,
+            'montant_de_base'    => $montantIndividuel
+        ];
     }
+
+    $soldeRow = $db->table('solde_user')->where('id_user', $userId)->get()->getRow();
+    $soldeActuel = $soldeRow ? (float)$soldeRow->solde : 0.0;
+
+    if ($soldeActuel < $totalDebiteGlobal) {
+        $db->transRollback();
+        return redirect()->back()->with('error', 'Solde insuffisant pour effectuer tous les envois. Requis global : ' . $totalDebiteGlobal . ' Ar.');
+    }
+
+  
+    $db->table('solde_user')
+       ->set('solde', 'solde - ' . $totalDebiteGlobal, false)
+       ->where('id_user', $userId)
+       ->update();
+
+    foreach ($actionsAEffectuer as $action) {
+        $dest = $action['destinataire_obj'];
+        
+        if ($dest) {
+            $db->table('solde_user')
+               ->set('solde', 'solde + ' . $action['montant_recu'], false)
+               ->where('id_user', $dest->id)
+               ->update();
+        } else {
+            $db->table('transaction_autre_operateur')->insert([
+                'id_user_source'    => $userId,
+                'numero_dest'       => $action['numero'],
+                'id_operateur_dest' => $action['id_operateur_dest'],
+                'montant'           => $action['montant_de_base'],
+                'frais'             => $action['frais_touche'],
+                'commission'        => $action['commission_touchee'],
+                'date_cree'         => date('Y-m-d H:i:s')
+            ]);
+        }
+
+        // NB : la commission due à l'autre opérateur n'est PAS comptée ici.
+        // C'est un montant à leur reverser, pas un gain pour notre opérateur ;
+        // elle reste uniquement enregistrée dans transaction_autre_operateur.commission.
+        $statut = $dest ? 'Transfert' : 'Transfert (externe)';
+        if ($nbDestinataires > 1) $statut .= ' (Multiple ' . $nbDestinataires . 'x)';
+        if ($inclureFraisRetrait)  $statut .= ' + Frais Retrait';
+
+        $db->table('transactions')->insert([
+            'id_sender'         => $userId,
+            'id_receiver'       => $dest ? $dest->id : null,
+            'receiver_numero'   => $action['numero'],
+            'montant'           => $action['montant_de_base'],
+            'frais'             => $action['frais_touche'],
+            'statut'            => $statut,
+            'id_type_operation' => 3
+        ]);
+    }
+
+    $db->transComplete();
+
+    if ($db->transStatus() === false) {
+        return redirect()->back()->with('error', 'Erreur critique de transaction en base de données.');
+    }
+
+    return redirect()->to('dashboard')->with('success', 'Envois multiples effectués avec succès !');
+}
 
     public function CalculFrais() {
         $montant = $this->request->getPost('montant');
@@ -155,15 +224,10 @@ class Transaction extends BaseController {
         $row = $baremeModel->getFraisForAmount($typeOperation, $montant);
         $frais = $row ? (is_array($row) ? (float)$row['montant_frais'] : (float)$row->montant_frais) : 0.0;
 
-        if ($idOperateurSource != $idOperateurDest) {
-            $db = \Config\Database::connect();
-            $commissionRow = $db->table('commissions')
-                                ->where('libelle', 'Inter-opérateurs')
-                                ->get()
-                                ->getRow();
-            if ($commissionRow) {
-                $frais += ($montant * $commissionRow->pourcentage / 100);
-            }
+        if ($idOperateurSource && $idOperateurDest && $idOperateurSource != $idOperateurDest) {
+            $commissionModel = new CommissionModel();
+            $pourcentage = $commissionModel->getPourcentagePourOperateur((int)$idOperateurDest);
+            $frais += ($montant * $pourcentage / 100);
         }
 
         return json_encode(['frais' => $frais]);

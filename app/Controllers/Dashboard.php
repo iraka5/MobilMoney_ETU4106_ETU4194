@@ -17,10 +17,6 @@ class Dashboard extends BaseController {
 
         $userId = session()->get('user_id');
 
-$userId = session()->get('user_id');
-
-$userId = session()->get('user_id');
-
 $solde = $db->query("
     SELECT 
         COALESCE(SUM(
@@ -88,32 +84,6 @@ $solde = $db->query("
             GROUP BY t.libelle
         ")->getResultArray();
 
-        /*
-        $commissions = $db->table('commissions')->get()->getResultArray();
-
-        $gain_autres = $db->query("
-            SELECT 'Autres opérateurs' AS libelle,
-                   COUNT(*) AS nb_transactions,
-                   SUM(frais) AS total_frais,
-                   SUM(montant * (c.pourcentage/100)) AS commission_reversee,
-                   SUM(frais) - SUM(montant * (c.pourcentage/100)) AS gain_net
-            FROM transaction_autre_operateur t
-            JOIN commissions c ON c.libelle = 'Autres opérateurs'
-        ")->getResultArray();
-
-        $gain_operateurs = $db->query("
-            SELECT o.libelle AS operateur,
-                   COUNT(*) AS nb_transactions,
-                   SUM(t.montant) AS montant_total,
-                   SUM(t.montant * (c.pourcentage/100)) AS montant_a_envoyer
-            FROM transaction_autre_operateur t
-            JOIN users u ON u.id = t.id_user_dest
-            JOIN prefixe p ON p.id = u.id_prefixe
-            JOIN operateurs o ON o.id = p.id_operateur
-            JOIN commissions c ON c.libelle = 'Autres opérateurs'
-            GROUP BY o.libelle
-        ")->getResultArray();
-*/
         return view('dashboard', [
             'user' => $user,
             'solde' => $solde,
@@ -121,9 +91,6 @@ $solde = $db->query("
             'operateurs' => $operateurs,
             'frais' => $frais,
             'gain_frais' => $gain_frais
-            //'commissions' => $commissions,
-            //'gain_autres' => $gain_autres,
-            //'gain_operateurs' => $gain_operateurs
         ]);
     }
 }

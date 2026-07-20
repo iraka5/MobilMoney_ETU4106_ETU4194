@@ -70,12 +70,49 @@ class Home extends Controller
                              ->get()
                              ->getResultArray();
 
-    $data['gain_frais'] = $db->table('transactions t')
-                             ->select('t.id_type_operation, o.libelle as type_operation, COUNT(*) as nb_transactions, SUM(t.frais) as total_frais')
-                             ->join('type_operation o', 't.id_type_operation = o.id', 'left')
-                             ->groupBy('t.id_type_operation')
-                             ->get()
-                             ->getResultArray();  
+    // Gains par type d'opération, en séparant les transferts vers notre
+    // opérateur des transferts vers les autres opérateurs (V2).
+    $data['gain_frais'] = $db->query("
+        SELECT
+            CASE
+                WHEN t.id_type_operation = 3 AND t.id_receiver IS NOT NULL THEN 'Transfert (notre opérateur)'
+                WHEN t.id_type_operation = 3 AND t.id_receiver IS NULL     THEN 'Transfert (autres opérateurs)'
+                ELSE o.libelle
+            END AS type_operation,
+            COUNT(*) AS nb_transactions,
+            SUM(t.frais) AS total_frais
+        FROM transactions t
+        JOIN type_operation o ON t.id_type_operation = o.id
+        GROUP BY type_operation
+    ")->getResultArray();
+
+    // Gain net (nos propres frais) sur les seuls transferts vers d'autres opérateurs
+    $data['gain_autres'] = $db->query("
+        SELECT
+            'Autres opérateurs' AS libelle,
+            COUNT(*) AS nb_transactions,
+            COALESCE(SUM(frais), 0.0) AS gain_net
+        FROM transaction_autre_operateur
+    ")->getResultArray();
+
+    // Commissions configurées par opérateur (modifiables)
+    $data['commissions'] = $db->table('commissions c')
+                              ->select('c.id, o.libelle, c.pourcentage')
+                              ->join('operateurs o', 'o.id = c.id_operateur')
+                              ->get()
+                              ->getResultArray();
+
+    // Montants à reverser à chaque opérateur (somme des commissions collectées pour leur compte)
+    $data['gain_operateurs'] = $db->query("
+        SELECT
+            o.libelle AS operateur,
+            COUNT(*) AS nb_transactions,
+            SUM(t.montant) AS montant_total,
+            SUM(t.commission) AS montant_a_envoyer
+        FROM transaction_autre_operateur t
+        JOIN operateurs o ON o.id = t.id_operateur_dest
+        GROUP BY o.libelle
+    ")->getResultArray();
 
     return view('operateur/index', $data);
 }
@@ -109,5 +146,34 @@ class Home extends Controller
         ]);
 
         return redirect()->to('/operateurs')->with('success', 'Frais modifié avec succès.');
+    }
+
+    public function modifierCommission($id)
+    {
+        helper('form');
+        $db = \Config\Database::connect();
+
+        $data['commission'] = $db->table('commissions c')
+                                 ->select('c.id, c.pourcentage, o.libelle')
+                                 ->join('operateurs o', 'o.id = c.id_operateur')
+                                 ->where('c.id', $id)
+                                 ->get()
+                                 ->getRowArray();
+
+        if (! $data['commission']) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('Commission introuvable.');
+        }
+
+        return view('operateur/modifier_commission', $data);
+    }
+
+    public function mettreAJourCommission($id)
+    {
+        $db = \Config\Database::connect();
+        $db->table('commissions')
+           ->where('id', $id)
+           ->update(['pourcentage' => $this->request->getPost('pourcentage')]);
+
+        return redirect()->to('/operateurs')->with('success', 'Commission modifiée avec succès.');
     }
 }

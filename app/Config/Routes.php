@@ -10,6 +10,8 @@ use CodeIgniter\Router\RouteCollection;
 $routes->get('/operateurs', 'Home::listerTout'); 
 $routes->get('frais/modifier/(:num)', 'Home::modifierFrais/$1');
 $routes->post('frais/mettreAJour/(:num)', 'Home::mettreAJourFrais/$1');
+$routes->get('commission/modifier/(:num)', 'Home::modifierCommission/$1');
+$routes->post('commission/mettreAJour/(:num)', 'Home::mettreAJourCommission/$1');
 
 $routes->get('/', 'Login::index');            
 $routes->get('/login', 'Login::index');         
