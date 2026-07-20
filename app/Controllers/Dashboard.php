@@ -20,12 +20,17 @@ class Dashboard extends BaseController {
                        ->getRow();
         $solde = $soldeRow ? $soldeRow->solde : 0;
 
-        $transactions = $db->table('transactions')
-                           ->where('id_sender', session()->get('user_id'))
-                           ->orWhere('id_receiver', session()->get('user_id'))
-                           ->orderBy('date_transaction', 'DESC')
-                           ->get()
-                           ->getResultArray();
+                $transactions = $db->table('transactions t')
+                           ->select('t.*, s.numero as sender_numero, s.email as sender_email, COALESCE(t.receiver_numero, r.numero) as receiver_numero, r.email as receiver_email')
+                           ->join('users s', 't.id_sender = s.id', 'left')
+                           ->join('users r', 't.id_receiver = r.id', 'left')
+                                                     ->groupStart()
+                                                         ->where('t.id_sender', session()->get('user_id'))
+                                                         ->orWhere('t.id_receiver', session()->get('user_id'))
+                                                     ->groupEnd()
+                                                     ->orderBy('t.date_transaction', 'DESC')
+                                                     ->get()
+                                                     ->getResultArray();
 
         return view('dashboard', [
             'user' => $user,

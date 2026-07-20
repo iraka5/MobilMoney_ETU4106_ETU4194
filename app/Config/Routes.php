@@ -18,6 +18,5 @@ $routes->post('/login/check', 'Login::check');
 $routes->get('/dashboard', 'Dashboard::index');
 
 $routes->post('/transaction/depot', 'Transaction::depot');  
-$routes->post('/transaction/retrait', 'Transaction::retrait'); 
-
+$routes->post('/transaction/retrait', 'Transaction::retrait'); $routes->post('/transaction/transfert', 'Transaction::transfert');
 $routes->get('/logout', 'Logout::index');       

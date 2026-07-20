@@ -64,46 +64,90 @@ class Transaction extends BaseController {
         }
     }
 
-    public function transfert() {
-        $db = \Config\Database::connect();
-        $userId = session()->get('user_id');
-        $numeroDestinataire = $this->request->getPost('numero_destinataire');
-        $montant = $this->request->getPost('montant');
+public function transfert() {
+    $db = \Config\Database::connect();
+    $userId = session()->get('user_id');
+    $numeroDestinataire = $this->request->getPost('numero_destinataire');
+    $montantInitial = (float)$this->request->getPost('montant');
+    $inclureFraisRetrait = $this->request->getPost('inclure_frais_retrait') === '1';
 
-        $soldeRow = $db->table('solde_user')->where('id_user', $userId)->get()->getRow();
-        $baremeModel = new BaremeFraisModel();
-        $row = $baremeModel->getFraisForAmount(3, $montant);
-        $frais = $row ? (is_array($row) ? (float)$row['montant_frais'] : (float)$row->montant_frais) : 0.0;
+    if ($montantInitial <= 0) {
+        return redirect()->to('/dashboard')->with('error', 'Le montant doit être supérieur à 0 Ar');
+    }
 
-        if ($soldeRow && $soldeRow->solde >= ($montant + $frais)) {
-            $destinataire = $db->table('users')->where('numero', $numeroDestinataire)->get()->getRow();
-            if ($destinataire) {
-                $db->table('solde_user')
-                   ->set('solde', 'solde - ' . ((float)$montant + $frais), false)
-                   ->where('id_user', $userId)
-                   ->update();
+    $baremeModel = new BaremeFraisModel();
 
-                $db->table('solde_user')
-                   ->set('solde', 'solde + ' . (float)$montant, false)
-                   ->where('id_user', $destinataire->id)
-                   ->update();
+    $rowTransfert = $baremeModel->getFraisForAmount(3, $montantInitial);
+    $fraisTransfert = 0.0;
+    if ($rowTransfert) {
+        $fraisTransfert = is_array($rowTransfert) ? (float)$rowTransfert['montant_frais'] : (float)$rowTransfert->montant_frais;
+    } else {
+        $fraisTransfert = 50.0; 
+    }
 
-                $db->table('transactions')->insert([
-                    'id_sender' => $userId,
-                    'id_receiver' => $destinataire->id,
-                    'montant' => $montant,
-                    'frais' => $frais,
-                    'statut' => 'Transfert',
-                    'id_type_operation' => 3
-                ]);
-
-                return redirect()->to('/dashboard')->with('success', 'Transfert effectué');
-            } else {
-                return redirect()->to('/dashboard')->with('error', 'Destinataire introuvable');
-            }
+    $fraisRetrait = 0.0;
+    if ($inclureFraisRetrait) {
+        $rowRetrait = $baremeModel->getFraisForAmount(2, $montantInitial);
+        if ($rowRetrait) {
+            $fraisRetrait = is_array($rowRetrait) ? (float)$rowRetrait['montant_frais'] : (float)$rowRetrait->montant_frais;
         } else {
-            return redirect()->to('/dashboard')->with('error', 'Solde insuffisant');
+            $fraisRetrait = 50.0;
         }
     }
+
+    $totalFraisTouche = $fraisTransfert + $fraisRetrait; 
+    $montantRecu = $montantInitial + $fraisRetrait;      
+    $totalDebite = $montantInitial + $totalFraisTouche;  
+
+    $soldeRow = $db->table('solde_user')->where('id_user', $userId)->get()->getRow();
+    $soldeActuel = $soldeRow ? (float)$soldeRow->solde : 0.0;
+
+    if ($soldeActuel >= $totalDebite) {
+        $destinataire = $db->table('users')->where('numero', $numeroDestinataire)->get()->getRow();
+
+        // DEBUT DE LA TRANSACTION
+        $db->transStart(); 
+
+        // Débiter l'expéditeur
+        $db->table('solde_user')
+           ->set('solde', 'solde - ' . $totalDebite, false)
+           ->where('id_user', $userId)
+           ->update();
+
+        // Si destinataire enregistré, créditer son compte
+        if ($destinataire) {
+            $db->table('solde_user')
+               ->set('solde', 'solde + ' . $montantRecu, false)
+               ->where('id_user', $destinataire->id)
+               ->update();
+        }
+
+        // Libellé pour l'historique
+        $statut = $destinataire ? 'Transfert' : 'Transfert (externe)';
+        if ($inclureFraisRetrait) {
+            $statut .= ' + Frais Retrait';
+        }
+
+        $db->table('transactions')->insert([
+            'id_sender'         => $userId,
+            'id_receiver'       => $destinataire ? $destinataire->id : null,
+            'receiver_numero'   => $numeroDestinataire,
+            'montant'           => $montantInitial, 
+            'frais'             => $totalFraisTouche, 
+            'statut'            => $statut,
+            'id_type_operation' => 3
+        ]);
+
+        $db->transComplete();
+
+        if ($db->transStatus() === false) {
+            return redirect()->to('/dashboard')->with('error', 'Erreur lors de la mise à jour des soldes en base de données.');
+        }
+
+        return redirect()->to('/dashboard')->with('success', 'Transfert effectué avec succès');
+    } else {
+        return redirect()->to('/dashboard')->with('error', 'Solde insuffisant. Il vous faut ' . $totalDebite . ' Ar au total.');
+    }
+}
 
 }

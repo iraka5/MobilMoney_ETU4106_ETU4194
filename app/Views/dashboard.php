@@ -63,26 +63,28 @@
             </div>
         </div>
     </div>
-
-        <div class="col-md-6">
-            <div class="card shadow-sm">
-                <div class="card-header bg-warning text-white">Faire un transfert</div>
-                <div class="card-body">
-                    <form action="<?= base_url('transaction/transfert') ?>" method="POST">
-                        <div class="mb-3">
-                            <label class="form-label">Numéro du destinataire</label>
-                            <input type="text" name="numero_destinataire" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Montant du transfert</label>
-                            <input type="number" name="montant" class="form-control" required>
-                        </div>
-                        <button type="submit" class="btn btn-warning">Transférer</button>
-                    </form>
+<div class="col-md-6">
+    <div class="card shadow-sm">
+        <div class="card-header bg-warning text-white">Faire un transfert</div>
+        <div class="card-body">
+            <form action="<?= base_url('transaction/transfert') ?>" method="POST">
+                <div class="mb-3">
+                    <label class="form-label">Numéro du destinataire</label>
+                    <input type="text" name="numero_destinataire" class="form-control" required>
                 </div>
-            </div>
+                <div class="mb-3">
+                    <label class="form-label">Montant du transfert</label>
+                    <input type="number" name="montant" class="form-control" required>
+                </div>
+                <div class="mb-3 form-check">
+                    <input type="checkbox" name="inclure_frais_retrait" value="1" class="form-check-input" id="checkRetrait">
+                    <label class="form-check-label" for="checkRetrait">Prendre en charge les frais de retrait</label>
+                </div>
+                <button type="submit" class="btn btn-warning">Transférer</button>
+            </form>
         </div>
     </div>
+</div>
 
     <!-- Historique -->
     <div class="card mt-4 shadow-sm">
@@ -93,6 +95,7 @@
                     <tr>
                         <th>ID</th>
                         <th>Type</th>
+                        <th>Destinataire</th>
                         <th>Montant</th>
                         <th>Frais</th>
                         <th>Date</th>
@@ -103,6 +106,16 @@
                     <tr>
                         <td><?= esc($t['id_transaction']) ?></td>
                         <td><?= esc($t['statut']) ?></td>
+                        <td>
+                            <?php if (! empty($t['receiver_numero']) && $t['id_type_operation'] == 3): ?>
+                                <?= esc($t['receiver_numero']) ?>
+                                <?php if (! empty($t['receiver_email'])): ?>
+                                    &nbsp;(&lt;<?= esc($t['receiver_email']) ?>&gt;)
+                                <?php endif; ?>
+                            <?php else: ?>
+                                -
+                            <?php endif; ?>
+                        </td>
                         <td><?= esc($t['montant']) ?></td>
                         <td><?= esc($t['frais']) ?></td>
                         <td><?= esc($t['date_transaction']) ?></td>

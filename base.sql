@@ -47,7 +47,8 @@ CREATE TABLE baremeFrais (
 CREATE TABLE transactions (
     id_transaction INTEGER PRIMARY KEY AUTOINCREMENT,
     id_sender INTEGER NOT NULL,
-    id_receiver INTEGER NOT NULL,
+    id_receiver INTEGER,
+    receiver_numero TEXT,
     montant REAL NOT NULL,
     frais REAL DEFAULT 0,
     statut TEXT NOT NULL,

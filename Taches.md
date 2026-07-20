@@ -38,9 +38,6 @@
     (ok)-  table transaction , id-user, id 
   
 
-  configuration de la basesqlite
-
-
   V2
 
   ### cote operateur
@@ -57,9 +54,9 @@
 
 
   ### cote client
-  -Option inclure frais de retrait lors de l’envoi
+  - Option inclure frais de retrait lors de l’envoi
     -dans retrait (bouton)(condition)
-    -frais dans transfert
+    - (ok - 4106) frais dans transfert
   -Envoi multiple vers plusieurs numéros ( divisé le montant pour chaque numéro)
     -ajout champ dans transfert
     -fonction calcul montant pour chaque numero
