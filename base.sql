@@ -68,3 +68,72 @@ CREATE Table IF not EXISTS " solde_user" (
     "last_updated" DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY ("id_user") REFERENCES "users" ("id")
 );
+
+
+INSERT INTO "operateurs" ("libelle") VALUES ('Orange');  
+INSERT INTO "operateurs" ("libelle") VALUES ('Airtel');     
+INSERT INTO "operateurs" ("libelle") VALUES ('YAS');    
+
+INSERT INTO "prefixe" ("prefixe", "id_operateur") VALUES ('32', 1);
+INSERT INTO "prefixe" ("prefixe", "id_operateur") VALUES ('33', 2);
+INSERT INTO "prefixe" ("prefixe", "id_operateur") VALUES ('34', 3);
+
+INSERT INTO "type_operation" ("libelle") VALUES ('Dépôt');    
+INSERT INTO "type_operation" ("libelle") VALUES ('Retrait');   
+INSERT INTO "type_operation" ("libelle") VALUES ('Transfert'); 
+
+INSERT INTO "baremeFrais" ("id_type_operation", "montant_min", "montant_max", "montant_frais") 
+VALUES (1, 0.0, 1000000.0, 0.0);
+INSERT INTO "baremeFrais" ("id_type_operation", "montant_min", "montant_max", "montant_frais") 
+VALUES (2, 100.0, 1000.0, 50.0);
+INSERT INTO "baremeFrais" ("id_type_operation", "montant_min", "montant_max", "montant_frais") 
+VALUES (2, 1001.0, 5000.0, 50.0);
+INSERT INTO "baremeFrais" ("id_type_operation", "montant_min", "montant_max", "montant_frais") 
+VALUES (2, 5001.0, 10000.0, 100.0);
+INSERT INTO "baremeFrais" ("id_type_operation", "montant_min", "montant_max", "montant_frais") 
+VALUES (2, 10001.0, 25000.0, 200.0);
+INSERT INTO "baremeFrais" ("id_type_operation", "montant_min", "montant_max", "montant_frais") 
+VALUES (2, 25001.0, 50000.0, 400.0);
+INSERT INTO "baremeFrais" ("id_type_operation", "montant_min", "montant_max", "montant_frais") 
+VALUES (2, 5001.0, 100000.0, 800.0);
+INSERT INTO "baremeFrais" ("id_type_operation", "montant_min", "montant_max", "montant_frais") 
+VALUES (2, 100001.0, 250000.0, 1500.0);
+INSERT INTO "baremeFrais" ("id_type_operation", "montant_min", "montant_max", "montant_frais") 
+VALUES (2, 250001.0, 500000.0, 1500.0);
+INSERT INTO "baremeFrais" ("id_type_operation", "montant_min", "montant_max", "montant_frais") 
+VALUES (2, 500001.0, 1000000.0, 2500.0);
+INSERT INTO "baremeFrais" ("id_type_operation", "montant_min", "montant_max", "montant_frais") 
+VALUES (2, 1000001.0, 2000000.0, 3000.0);
+INSERT INTO "baremeFrais" ("id_type_operation", "montant_min", "montant_max", "montant_frais") 
+VALUES (3, 100.0, 1000.0, 50.0);
+INSERT INTO "baremeFrais" ("id_type_operation", "montant_min", "montant_max", "montant_frais") 
+VALUES (3, 1001.0, 5000.0, 50.0);
+INSERT INTO "baremeFrais" ("id_type_operation", "montant_min", "montant_max", "montant_frais") 
+VALUES (3, 5001.0, 10000.0, 100.0);
+INSERT INTO "baremeFrais" ("id_type_operation", "montant_min", "montant_max", "montant_frais") 
+VALUES (3, 10001.0, 25000.0, 200.0);
+INSERT INTO "baremeFrais" ("id_type_operation", "montant_min", "montant_max", "montant_frais") 
+VALUES (3, 25001.0, 50000.0, 400.0);
+INSERT INTO "baremeFrais" ("id_type_operation", "montant_min", "montant_max", "montant_frais") 
+VALUES (3, 5001.0, 100000.0, 800.0);
+INSERT INTO "baremeFrais" ("id_type_operation", "montant_min", "montant_max", "montant_frais") 
+VALUES (3, 100001.0, 250000.0, 1500.0);
+INSERT INTO "baremeFrais" ("id_type_operation", "montant_min", "montant_max", "montant_frais") 
+VALUES (3, 250001.0, 500000.0, 1500.0);
+INSERT INTO "baremeFrais" ("id_type_operation", "montant_min", "montant_max", "montant_frais") 
+VALUES (3, 500001.0, 1000000.0, 2500.0);
+INSERT INTO "baremeFrais" ("id_type_operation", "montant_min", "montant_max", "montant_frais") 
+VALUES (3, 1000001.0, 2000000.0, 3000.0);
+
+
+CREATE VIEW IF NOT EXISTS "vue_bareme_operations" AS
+SELECT 
+    b.id AS id_bareme,
+    t.libelle AS type_operation,
+    b.montant_min,
+    b.montant_max,
+    b.montant_frais
+FROM 
+    "baremeFrais" b
+JOIN 
+    "type_operation" t ON b.id_type_operation = t.id;

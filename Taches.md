@@ -4,11 +4,13 @@
 
 ### Coté Operateur
 
-- Configuration des préfixes valable de l’opérateur
+- (ok - 4106) Configuration des préfixes valable de l’opérateur
   - crée table / operateur : id , prefixe , libelle
-- Création de types d'opérations 
+- (ok - 4106)- Création de types d'opérations 
   - table type_mouvement : id , libelle 
+- (ok - 4106) creation bareme et modification
   - table barème : montant_min , montant_max, valeur_frais
+
   
 - Situation gain via les différents frais
   - à l'aide de la table transaction on peut la cumul des frais
@@ -20,7 +22,7 @@
 
 - Login automatique avec le numéro de téléphone
   - formulaire, input : numero , email , mdp
-    - table utilisateur : numero , email , mdp , id , id-solde, id-préfixe
+  - table utilisateur : numero , email , mdp , id , id-solde, id-préfixe
   - fonction verifier si le numero est valide
   - afficher les erreurs ( javascript)
   - inserer le numero dans la base si elle n' existe pas
