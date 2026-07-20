@@ -47,5 +47,31 @@
         <?php endforeach; ?>
     </tbody>
 </table>
+
+<h2>Situation gain via les différents frais</h2>
+<table border="1">
+    <thead>
+        <tr>
+            <th>Opération</th>
+            <th>Nombre de transactions</th>
+            <th>Total des frais reçus</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php if (! empty($gain_frais)): ?>
+            <?php foreach ($gain_frais as $gain): ?>
+            <tr>
+                <td><?= esc($gain['type_operation']) ?></td>
+                <td><?= esc($gain['nb_transactions']) ?></td>
+                <td><?= esc($gain['total_frais']) ?> Ar</td>
+            </tr>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <tr>
+                <td colspan="3">Aucun frais enregistré pour le moment.</td>
+            </tr>
+        <?php endif; ?>
+    </tbody>
+</table>
 </body>
 </html>

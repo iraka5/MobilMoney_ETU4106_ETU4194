@@ -19,9 +19,16 @@ class Home extends Controller
     {
         $operateurModel = new OperateurModel();
         $fraisModel     = new FraisModel();
+        $db             = \Config\Database::connect();
         
         $data['operateurs'] = $operateurModel->findAll();
         $data['frais']      = $fraisModel->findAll();
+        $data['gain_frais'] = $db->table('transactions t')
+                                 ->select('t.id_type_operation, o.libelle as type_operation, COUNT(*) as nb_transactions, SUM(t.frais) as total_frais')
+                                 ->join('type_operation o', 't.id_type_operation = o.id', 'left')
+                                 ->groupBy('t.id_type_operation')
+                                 ->get()
+                                 ->getResultArray();
         
         return view('operateur/index', $data);
     }
