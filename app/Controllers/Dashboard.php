@@ -30,10 +30,31 @@ class Dashboard extends BaseController {
                            ->get()
                            ->getResultArray();
 
+        // Liste des opérateurs
+        $operateurs = $db->table('operateurs')->get()->getResultArray();
+
+        // Barème des frais
+        $frais = $db->query("
+            SELECT b.id AS id_bareme, t.libelle AS type_operation,
+                   b.montant_min, b.montant_max, b.montant_frais
+            FROM baremeFrais b
+            JOIN type_operation t ON b.id_type_operation = t.id
+        ")->getResultArray();
+
+        // Situation gain via les différents frais
+        $gain_frais = $db->query("
+            SELECT t.libelle AS type_operation,
+                   COUNT(tr.id_transaction) AS nb_transactions,
+                   SUM(tr.frais) AS total_frais
+            FROM transactions tr
+            JOIN type_operation t ON tr.id_type_operation = t.id
+            GROUP BY t.libelle
+        ")->getResultArray();
+
         // Commissions autres opérateurs (configuration)
         $commissions = $db->table('commissions')->get()->getResultArray();
 
-        // Situation gain via autres opérateurs
+        // Situation gain via commissions autres opérateurs
         $gain_autres = $db->query("
             SELECT 'Autres opérateurs' AS libelle,
                    COUNT(*) AS nb_transactions,
@@ -44,12 +65,30 @@ class Dashboard extends BaseController {
             JOIN commissions c ON c.libelle = 'Autres opérateurs'
         ")->getResultArray();
 
+        // Situation des montants à envoyer à chaque opérateur
+        $gain_operateurs = $db->query("
+            SELECT o.libelle AS operateur,
+                   COUNT(*) AS nb_transactions,
+                   SUM(t.montant) AS montant_total,
+                   SUM(t.montant * (c.pourcentage/100)) AS montant_a_envoyer
+            FROM transaction_autre_operateur t
+            JOIN users u ON u.id = t.id_user_dest
+            JOIN prefixe p ON p.id = u.id_prefixe
+            JOIN operateurs o ON o.id = p.id_operateur
+            JOIN commissions c ON c.libelle = 'Autres opérateurs'
+            GROUP BY o.libelle
+        ")->getResultArray();
+
         return view('dashboard', [
             'user' => $user,
             'solde' => $solde,
             'transactions' => $transactions,
+            'operateurs' => $operateurs,
+            'frais' => $frais,
+            'gain_frais' => $gain_frais,
             'commissions' => $commissions,
-            'gain_autres' => $gain_autres
+            'gain_autres' => $gain_autres,
+            'gain_operateurs' => $gain_operateurs
         ]);
     }
 }

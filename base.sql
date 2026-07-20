@@ -221,15 +221,14 @@ SELECT
 FROM transaction_autre_operateur t
 JOIN commissions c ON c.libelle = 'Autres-opérateurs';
 
-SELECT 
-    p.libelle AS operateur,
-    COUNT(*) AS nb_transactions,
-    SUM(t.montant) AS montant_total,
-    SUM(t.montant * (c.pourcentage/100)) AS montant_a_envoyer
+
+SELECT o.libelle AS operateur,
+       COUNT(*) AS nb_transactions,
+       SUM(t.montant) AS montant_total,
+       SUM(t.montant * (c.pourcentage/100)) AS montant_a_envoyer
 FROM transaction_autre_operateur t
 JOIN users u ON u.id = t.id_user_dest
 JOIN prefixe p ON p.id = u.id_prefixe
-JOIN commissions c ON c.libelle = 'Autres-opérateurs'
-GROUP BY p.libelle;
-
-
+JOIN operateurs o ON o.id = p.id_operateur
+JOIN commissions c ON c.libelle = o.libelle   -- 👈 correspondance opérateur
+GROUP BY o.libelle;

@@ -79,39 +79,41 @@
         <tr>
             <th>Libellé</th>
             <th>Nombre de transactions</th>
-            <th>Total des commissions reçues</th>
+            <th>Gain net</th>
         </tr>
     </thead>
     <tbody>
-        <?php if (! empty($gain_commissions)): ?>
-            <?php foreach ($gain_commissions as $gain): ?>
+        <?php if (! empty($gain_autres)): ?>
+            <?php foreach ($gain_autres as $gain): ?>
             <tr>
                 <td><?= esc($gain['libelle']) ?></td>
                 <td><?= esc($gain['nb_transactions']) ?></td>
-                <td><?= esc($gain['total_commissions']) ?> Ar</td>
+                <td><?= esc($gain['gain_net']) ?> Ar</td>
             </tr>
             <?php endforeach; ?>
         <?php else: ?>
             <tr>
-                <td colspan="3">Aucune commission enregistrée pour le moment.</td>
+                <td colspan="3">Aucune donnée enregistrée.</td>
             </tr>
         <?php endif; ?>
     </tbody>
 </table>
-<h2>Commissions autre opérateurs</h2>
+
+
+<h2>Commissions autres opérateurs</h2>
 <table border="1">
     <thead>
         <tr>
-            <th>ID</th>
+            <th>Opération</th>
             <th>Libellé</th>
-            <th>Pourcentage</th>
+            <th>Commission</th>
         </tr>
     </thead>
     <tbody>
         <?php if (! empty($commissions)): ?>
             <?php foreach ($commissions as $c): ?>
             <tr>
-                <td><?= esc($c['id']) ?></td>
+                <td>Transfert</td> <!-- ou autre si tu ajoutes une colonne -->
                 <td><?= esc($c['libelle']) ?></td>
                 <td><?= esc($c['pourcentage']) ?> %</td>
             </tr>
@@ -119,6 +121,34 @@
         <?php else: ?>
             <tr>
                 <td colspan="3">Aucune commission configurée.</td>
+            </tr>
+        <?php endif; ?>
+    </tbody>
+</table>
+
+<h2>Situation des montants à envoyer à chaque opérateur</h2>
+<table border="1">
+    <thead>
+        <tr>
+            <th>Opérateur</th>
+            <th>Nombre de transactions</th>
+            <th>Montant total transféré</th>
+            <th>Montant à envoyer (selon %)</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php if (! empty($gain_operateurs)): ?>
+            <?php foreach ($gain_operateurs as $g): ?>
+            <tr>
+                <td><?= esc($g['operateur']) ?></td>
+                <td><?= esc($g['nb_transactions']) ?></td>
+                <td><?= esc($g['montant_total']) ?> Ar</td>
+                <td><?= esc($g['montant_a_envoyer']) ?> Ar</td>
+            </tr>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <tr>
+                <td colspan="4">Aucun transfert vers autres opérateurs enregistré.</td>
             </tr>
         <?php endif; ?>
     </tbody>
