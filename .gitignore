@@ -1,0 +1,15 @@
+# Ignorer le fichier .env (config locale)
+.env
+
+# Ignorer le dossier vendor (dépendances Composer)
+vendor/
+
+# Ignorer les fichiers temporaires et logs
+writable/cache/
+writable/logs/
+writable/session/
+writable/debugbar/
+
+# Ignorer les fichiers système
+*.DS_Store
+Thumbs.db
