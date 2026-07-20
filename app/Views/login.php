@@ -26,6 +26,10 @@
             <button type="submit" class="btn btn-primary">Se connecter</button>
         </form>
 
+
+        <a href="<?= base_url('/operateurs') ?>" class="btn btn-primary">
+    <i class="bi bi-list-ul"></i> Voir les Opérateurs
+</a>
         <script>
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             const numeroInput = document.getElementById('numero');
