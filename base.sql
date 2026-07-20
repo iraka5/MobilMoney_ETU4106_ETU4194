@@ -58,6 +58,13 @@ CREATE TABLE transactions (
     FOREIGN KEY (id_type_operation) REFERENCES type_operation(id)
 );
 
+CREATE TABLE solde_user (
+    id_user INTEGER PRIMARY KEY,
+    solde REAL NOT NULL DEFAULT 0.0,
+    last_updated DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_user) REFERENCES users(id)
+);
+
 INSERT INTO "operateurs" ("libelle") VALUES ('Orange');  
 INSERT INTO "operateurs" ("libelle") VALUES ('Airtel');     
 INSERT INTO "operateurs" ("libelle") VALUES ('YAS');    
