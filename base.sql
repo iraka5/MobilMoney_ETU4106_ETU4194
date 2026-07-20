@@ -1,7 +1,7 @@
 PRAGMA foreign_keys = ON;
 
 DROP TABLE IF EXISTS transactions;
-DROP TABLE IF EXISTS solde_user;
+DROP TABLE IF EXISTS;
 DROP TABLE IF EXISTS baremeFrais;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS type_operation;

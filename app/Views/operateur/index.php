@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Liste des opérateurs</title>
+    <link rel="stylesheet" href="<?= base_url('css/style.css') ?>">
 </head>
 <body>
-
 <h2>Liste des opérateurs</h2>
 
 <table border="1">

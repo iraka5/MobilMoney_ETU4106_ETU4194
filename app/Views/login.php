@@ -3,33 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Connexion</title>
+    <link rel="stylesheet" href="<?= base_url('css/style.css') ?>">
 </head>
 <body>
-    <form id="loginForm" action="<?= base_url('login/check') ?>" method="POST">
-            <div class="mb-3">
+    <div class="login-container">
+        <div class="login-card">
+            <h1>Se connecter</h1>
+            <form id="loginForm" action="<?= base_url('login/check') ?>" method="POST">
                 <label for="numero" class="form-label">Numéro de téléphone</label>
                 <input type="text" id="numero" name="numero" class="form-control" required>
-                <div id="numeroError" class="text-danger mt-1"></div>
-            </div>
+                <div id="numeroError" class="text-danger"></div>
 
-            <div class="mb-3">
                 <label for="email" class="form-label">Email</label>
                 <input type="email" id="email" name="email" class="form-control" required>
-            </div>
 
-            <div class="mb-3">
                 <label for="mdp" class="form-label">Mot de passe</label>
                 <input type="password" id="mdp" name="mdp" class="form-control" required>
-            </div>
 
-            <button type="submit" class="btn btn-primary">Se connecter</button>
-        </form>
-
-
-        <a href="<?= base_url('/operateurs') ?>" class="btn btn-primary">
-    <i class="bi bi-list-ul"></i> Voir les Opérateurs
-</a>
+                <div class="login-actions">
+                    <button type="submit" class="btn btn-primary">Se connecter</button>
+                    <a href="<?= base_url('/operateurs') ?>" class="small-link">Voir les Opérateurs</a>
+                </div>
+            </form>
+        </div>
+    </div>
         <script>
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             const numeroInput = document.getElementById('numero');
