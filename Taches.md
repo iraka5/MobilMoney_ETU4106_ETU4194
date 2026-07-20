@@ -39,3 +39,15 @@
   
 
   configuration de la basesqlite
+
+
+  V2
+
+  ### cote operateur
+  -configuration autre prefixe
+    -ajout nouveaux lignes dans la table :id, prefixe, libelle
+  -Configuration % en plus de commissions pour les transferts vers les autres opérateurs 
+    -creation table commissions avec: id, libelle, pourcentage
+    -fonction pour appliquer % aux frais (autres operateurs seulement)
+  -Sur la page “Situation gain via les différents frais” , séparer opérateur et autres opérateurs
+    -autres tableau affichage des frais avec: 
