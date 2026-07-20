@@ -67,6 +67,27 @@
         </div>
     </div>
 
+    <!-- transfert -->
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-warning text-white">Faire un transfert</div>
+                <div class="card-body">
+                    <form action="<?= base_url('transaction/transfert') ?>" method="POST">
+                        <div class="mb-3">
+                            <label class="form-label">Numéro du destinataire</label>
+                            <input type="text" name="numero_destinataire" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Montant du transfert</label>
+                            <input type="number" name="montant" class="form-control" required>
+                        </div>
+                        <button type="submit" class="btn btn-warning">Transférer</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Historique -->
     <div class="card mt-4 shadow-sm">
         <div class="card-header bg-primary text-white">Historique des transactions</div>
