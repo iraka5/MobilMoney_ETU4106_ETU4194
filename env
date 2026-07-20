@@ -14,7 +14,7 @@
 # ENVIRONMENT
 #--------------------------------------------------------------------
 
-CI_ENVIRONMENT = developpement
+ CI_ENVIRONMENT = development
 
 #--------------------------------------------------------------------
 # APP
@@ -30,13 +30,11 @@ CI_ENVIRONMENT = developpement
 # DATABASE
 #--------------------------------------------------------------------
 
-# database.default.hostname = localhost
-# database.default.database = ci4
-# database.default.username = root
-# database.default.password = root
-# database.default.DBDriver = MySQLi
-# database.default.DBPrefix =
-# database.default.port = 3306
+database.default.hostname = localhost
+database.default.database = /opt/lampp/htdocs/MobilMoney_ETU4106_ETU4194/base.db
+database.default.DBDriver = SQLite3
+database.default.DBPrefix =
+
 
 # If you use MySQLi as tests, first update the values of Config\Database::$tests.
 # database.tests.hostname = localhost

@@ -1,40 +1,56 @@
-<?php
-$session = session();
-?>
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MobilMoney - Connexion</title>
+    <title>Document</title>
 </head>
 <body>
-    <h1>💰 MobilMoney - Connexion</h1>
+    <form id="loginForm" action="<?= base_url('login/check') ?>" method="POST">
+            <div class="mb-3">
+                <label for="numero" class="form-label">Numéro de téléphone</label>
+                <input type="text" id="numero" name="numero" class="form-control" required>
+                <div id="numeroError" class="text-danger mt-1"></div>
+            </div>
 
-    <?php if ($session->has('success')): ?>
-        <p style="color: green;"><?= $session->getFlashdata('success') ?></p>
-    <?php endif; ?>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" id="email" name="email" class="form-control" required>
+            </div>
 
-    <?php if ($session->has('error')): ?>
-        <p style="color: red;"><?= $session->getFlashdata('error') ?></p>
-    <?php endif; ?>
+            <div class="mb-3">
+                <label for="mdp" class="form-label">Mot de passe</label>
+                <input type="password" id="mdp" name="mdp" class="form-control" required>
+            </div>
 
-    <form method="POST" action="<?= site_url('auth/login') ?>">
-        <?= csrf_field() ?>
+            <button type="submit" class="btn btn-primary">Se connecter</button>
+        </form>
 
-        <label for="numero">Numéro de Téléphone:</label>
-        <input type="text" id="numero" name="numero" placeholder="Ex: 0321234567" required>
-        <small>Format: 0XX XXX XXX ou +261XX XXX XXX</small>
-        <br><br>
+        <script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            const numeroInput = document.getElementById('numero');
+            const numeroError = document.getElementById('numeroError');
+            const numero = numeroInput.value.trim();
 
-        <label for="password">Mot de passe:</label>
-        <input type="password" id="password" name="password" placeholder="Entrez votre mot de passe" required>
-        <small>Min 8 caractères (majuscule, minuscule, chiffre)</small>
-        <br><br>
+            // Préfixes valides (exemple Madagascar : 032, 033, 034, 038)
+            const prefixes = ['032', '033', '034', '038'];
 
-        <button type="submit">Se Connecter</button>
-    </form>
+            let isValid = false;
+            for (let prefix of prefixes) {
+                if (numero.startsWith(prefix) && numero.length === 10) {
+                    isValid = true;
+                    break;
+                }
+            }
 
-    <p><small>Nouveau? Le compte sera créé automatiquement au premier login.</small></p>
+            if (!isValid) {
+                e.preventDefault(); // Bloque l’envoi du formulaire
+                numeroError.textContent = "Numéro invalide. Exemple : 0321234567";
+            } else {
+                numeroError.textContent = "";
+            }
+        });
+        </script>
+
 </body>
 </html>

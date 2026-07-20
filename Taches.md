@@ -20,7 +20,7 @@
 
 ### Coté Client 
 
-- Login automatique avec le numéro de téléphone
+ - (ok- 4194) Login automatique avec le numéro de téléphone
   - formulaire, input : numero , email , mdp
   - table utilisateur : numero , email , mdp , id , id-solde, id-préfixe
   - fonction verifier si le numero est valide
@@ -30,9 +30,9 @@
   
 
 - Operations
-  - voir le solde
+  (ok- 4194) - voir le solde
     - depuis la table solde
-  - faire un dépot
+- faire un dépot
   - faire un retrait
   - voir les historique
     -  table transaction , id-user, id 
