@@ -5,9 +5,13 @@ use CodeIgniter\Router\RouteCollection;
 /**
  * @var RouteCollection $routes
  */
-$routes->get('/', 'Home::index');
-$routes->get('/test', 'Home::index');
+$routes->get('/', 'Login::index');            
+$routes->get('/login', 'Login::index');         
+$routes->post('/login/check', 'Login::check');  
 
+$routes->get('/dashboard', 'Dashboard::index');
 
-$routes->get('/login', 'Login::index');
-$routes->post('/login/check', 'Login::check');
+$routes->post('/transaction/depot', 'Transaction::depot');  
+$routes->post('/transaction/retrait', 'Transaction::retrait'); 
+
+$routes->get('/logout', 'Logout::index');       
