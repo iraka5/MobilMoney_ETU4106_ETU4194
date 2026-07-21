@@ -19,6 +19,7 @@
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
         <li class="nav-item"><a class="nav-link active" href="<?= base_url('/operateurs') ?>">Voir les Opérateur</a></li>
+
         <li class="nav-item"><a class="nav-link text-danger" href="<?= base_url('logout') ?>">Déconnexion</a></li>
       </ul>
     </div>
@@ -36,8 +37,8 @@
             <div class="col-md-5 text-md-end mt-3 mt-md-0">
                 <span class="text-muted d-block small uppercase tracking-wider">Solde Actuel</span>
                 <span class="h2 fw-bold text-success"><?= esc($solde) ?> <small class="fs-6 text-muted">Ar</small></span>
-            </div>
         </div>
+
     </div>
 
     <!-- Messages Flash de Notifications -->
@@ -161,7 +162,25 @@
     </div>
 </div>
 
-<!-- Script JavaScript pour gérer l'ajout dynamique -->
+    <div class="row g-4 mb-4">
+        <div class="col-12 col-md-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-success text-white fw-bold">Configurer mon epargne</div>
+                <div class="card-body d-flex flex-column justify-content-between">
+                    <form action="<?= base_url('transaction/epargne') ?>" method="POST">
+                        <div class="mb-3">
+                            <label class="form-label">Pourcentage de mon epargne</label>
+                            <div class="input-group">
+                                <input type="number" name="epargne" class="form-control" placeholder="0.00" required>
+                                <input type= "hidden" name=" id" values="">
+                                <span class="input-group-text">%</span>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100">configurer</button>
+                    </form>
+                </div>
+            </div>
+        </div>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const inputNumero = document.getElementById('inputNumero');

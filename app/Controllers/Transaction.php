@@ -9,7 +9,7 @@ class Transaction extends BaseController {
         $db = \Config\Database::connect();
         $userId = session()->get('user_id');
         $montant = $this->request->getPost('montant');
-
+        
         $baremeModel = new BaremeFraisModel();
         $row = $baremeModel->getFraisForAmount(1, $montant);
         $frais = $row ? (is_array($row) ? (float)$row['montant_frais'] : (float)$row->montant_frais) : 0.0;
@@ -19,6 +19,8 @@ class Transaction extends BaseController {
            ->set('solde', 'solde + ' . $delta, false)
            ->where('id_user', $userId)
            ->update();
+
+        
 
         $db->table('transactions')->insert([
             'id_sender' => $userId,
@@ -37,7 +39,6 @@ class Transaction extends BaseController {
         $userId = session()->get('user_id');
         $montant = $this->request->getPost('montant');
 
-        // Vérifier solde
         $soldeRow = $db->table('solde_user')->where('id_user', $userId)->get()->getRow();
         // Calculer frais depuis le barème
         $baremeModel = new BaremeFraisModel();
@@ -260,4 +261,25 @@ public function transfertMultiple()
 
     return $this->transfert();
 }
+
+    public function epargne() {
+        $db = \Config\Database::connect();
+        $userId = session()->get('user_id');
+        
+        $taux = $this->request->getPost('epargne');
+
+
+        $db->table('epargne')->insert([
+            'id_user' => $userId,
+            'pourcentage' => $taux,
+        ]);
+
+        return redirect()->to('/dashboard')->with('success', 'epargne enregistré');
+    }
+
+
+
+public function promotion(){
+    $db= \config\database::Connect();
+    }
 }

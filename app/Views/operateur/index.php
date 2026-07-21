@@ -7,14 +7,15 @@
     <!-- Bootstrap CDN CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="<?= base_url('css/style.css') ?>">
-    
 </head>
 <body class="bg-light">
 
+    <!-- Barre de navigation rapide -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4 shadow-sm">
         <div class="container-fluid">
             <span class="navbar-brand mb-0 h1">Dashboard Administration</span>
               <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link active" href="<?= base_url('/operateurs') ?>">Voir les Opérateur</a></li>
         <li class="nav-item"><a class="nav-link text-danger" href="<?= base_url('logout') ?>">Déconnexion</a></li>
       </ul>
     </div>

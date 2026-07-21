@@ -144,6 +144,18 @@ CREATE TABLE commissions (
     FOREIGN KEY (id_operateur) REFERENCES operateurs(id)
 );
 
+CREATE TABLE promotion(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    pourcentage REAL NOT NULL
+)
+
+CREATE TABLE epargne(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id_user  INTEGER NOT NULL,
+    pourcentage REAL NOT NUll,
+    date_creation DATETIME DEFAULT CURRENT_TIMESTAMP
+)
+
 
 INSERT INTO commissions (libelle, pourcentage)
 VALUES ('Orange', 5.0);
@@ -193,3 +205,18 @@ Ajouter des destinataires
 0321420548 0321420547
 Montant global à diviser
 1000ar
+
+
+git tag -a v1.0.0 -m "Release version 1.0.0"
+# Push a single tag
+git push origin v1.0.0
+
+# Push all tags at once
+git push origin --tags
+
+
+dépot = 1000 
+epargne = 50%
+
+epargne = 500
+solde = 1000 - 500 

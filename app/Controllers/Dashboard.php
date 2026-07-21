@@ -66,6 +66,7 @@ $solde = $db->query("
             JOIN type_operation t ON b.id_type_operation = t.id
         ")->getResultArray();
 
+
         $gain_frais = $db->query("
             SELECT t.libelle AS type_operation,
                    COUNT(tr.id_transaction) AS nb_transactions,
@@ -74,6 +75,8 @@ $solde = $db->query("
             JOIN type_operation t ON tr.id_type_operation = t.id
             GROUP BY t.libelle
         ")->getResultArray();
+
+
 
         return view('dashboard', [
             'user' => $user,
