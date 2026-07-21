@@ -4,13 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Connexion</title>
-    <!-- Bootstrap CDN CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="<?= base_url('css/style.css') ?>">
 </head>
 <body class="bg-light">
 
-    <!-- Centre la carte verticalement et horizontalement sur l'écran -->
     <div class="container d-flex justify-content-center align-items-center min-vh-100">
         <div class="row w-100 justify-content-center">
             <div class="col-12 col-md-6 col-lg-4">
@@ -30,7 +28,7 @@
                         
                         <!-- Téléphone -->
                         <div class="mb-3">
-                            <label for="numero" class="form-label">Numéro de téléphone</label>
+                            <label for="numero" class="form-label"><i class="bi bi-telephone-fill text-primary"></i> Numéro de téléphone</label>
                             <input type="text" id="numero" name="numero" class="form-control" placeholder="Ex: 0341234567" required>
                             <div id="numeroError" class="text-danger small mt-1"></div>
                         </div>
@@ -80,13 +78,13 @@
         }
 
         if (!isValid) {
-            e.preventDefault(); // Bloque l'envoi du formulaire si le numéro est invalide
+            e.preventDefault(); 
             numeroError.textContent = "Numéro invalide. Exemple : 0321234567";
-            numeroInput.classList.add('is-invalid'); // Ajoute la bordure rouge Bootstrap
+            numeroInput.classList.add('is-invalid'); 
         } else {
             numeroError.textContent = "";
             numeroInput.classList.remove('is-invalid');
-            numeroInput.classList.add('is-valid'); // Bordure verte Bootstrap si OK
+            numeroInput.classList.add('is-valid'); 
         }
     });
     </script>

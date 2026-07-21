@@ -6,10 +6,10 @@
     <title>Tableau de Bord</title>
     <!-- Bootstrap 5.3 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="<?= base_url('css/style.css') ?>">
 </head>
 <body class="bg-light">
 
-<!-- Barre de navigation -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
   <div class="container-fluid">
     <a class="navbar-brand fw-bold text-primary" href="#">MobileMoney</a>
@@ -18,7 +18,7 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
-        <li class="nav-item"><a class="nav-link active" href="<?= base_url('dashboard') ?>">Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link active" href="<?= base_url('/operateurs') ?>">Voir les Opérateur</a></li>
         <li class="nav-item"><a class="nav-link text-danger" href="<?= base_url('logout') ?>">Déconnexion</a></li>
       </ul>
     </div>
@@ -27,7 +27,6 @@
 
 <div class="container my-4">
 
-    <!-- En-tête Profil & Solde -->
     <div class="card p-4 mb-4 border-0 shadow-sm bg-white rounded">
         <div class="row align-items-center">
             <div class="col-md-7">
@@ -255,7 +254,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <table class="table table-striped table-hover align-middle mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th class="ps-3">ID</th>
+                            <th class="ps-3">I</th>
                             <th>Type / Statut</th>
                             <th>Destinataire</th>
                             <th>Montant</th>

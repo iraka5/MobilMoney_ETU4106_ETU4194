@@ -15,7 +15,7 @@
 - (ok - 4106) Situation gain via les différents frais
   - à l'aide de la table transaction on peut la cumul des frais
 
--  Situation des comptes clients
+-  (ok - 4106) Situation des comptes clients
   - tous les informations de la table user, transcations (id_user)
 
 ### Coté Client 
