@@ -13,3 +13,4 @@ writable/debugbar/
 # Ignorer les fichiers système
 *.DS_Store
 Thumbs.db
+Doc.md
